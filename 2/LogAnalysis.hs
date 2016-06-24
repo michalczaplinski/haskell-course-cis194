@@ -16,3 +16,16 @@ parseMessage message = case take 3 (words message) of
 
 parse :: String -> [LogMessage]
 parse messages = map parseMessage (lines messages)
+
+
+insert :: LogMessage -> MessageTree -> MessageTree
+insert logMessage tree
+  | timestamp logMessage > treeTime tree = insert logMessage (leftTree tree)
+  | timestamp logMessage < treeTime tree = insert logMessage (rightTree tree)
+  otherwise = Node 
+
+  where
+    timestamp (LogMessage _ ts _) = ts
+    treeTime (Node left (Node _ (LogMessage _ ts _) _) right) = ts
+    leftTree (Node left _ _) = left
+    rightTree (Node _ _ right) = right
