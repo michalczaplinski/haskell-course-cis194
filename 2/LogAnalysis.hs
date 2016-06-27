@@ -19,13 +19,13 @@ parse messages = map parseMessage (lines messages)
 
 
 insert :: LogMessage -> MessageTree -> MessageTree
+insert logMessage Leaf = Node Leaf logMessage Leaf
+insert (Unknown _) tree = tree
 insert logMessage tree
   | timestamp logMessage > treeTime tree = insert logMessage (leftTree tree)
-  | timestamp logMessage < treeTime tree = insert logMessage (rightTree tree)
-  otherwise = Node 
-
+  | otherwise = insert logMessage (rightTree tree)
   where
     timestamp (LogMessage _ ts _) = ts
-    treeTime (Node left (Node _ (LogMessage _ ts _) _) right) = ts
+    treeTime (Node _ (LogMessage _ ts _) _) = ts
     leftTree (Node left _ _) = left
     rightTree (Node _ _ right) = right
